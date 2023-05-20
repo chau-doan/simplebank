@@ -117,7 +117,7 @@ OFFSET $2
 `
 
 type ListAccountsParams struct {
-	Limit  int32 `json:"limit"`
+	Limit  int32 `jsgeon:"limit"`
 	Offset int32 `json:"offset"`
 }
 
@@ -127,7 +127,7 @@ func (q *Queries) ListAccounts(ctx context.Context, arg ListAccountsParams) ([]A
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Account
+	items := []Account{}
 	for rows.Next() {
 		var i Account
 		if err := rows.Scan(
