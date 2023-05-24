@@ -15,7 +15,7 @@ INSERT INTO users (
   email
 ) VALUES (
   $1, $2, $3, $4
-) RETURNING username, hashed_password, full_name, email, password_change_at, created_at
+) RETURNING username, hashed_password, full_name, email, password_change_at, created_at, is_email_verified
 `
 
 type CreateUserParams struct {
@@ -40,12 +40,13 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.Email,
 		&i.PasswordChangeAt,
 		&i.CreatedAt,
+		&i.IsEmailVerified,
 	)
 	return i, err
 }
 
 const getUser = `-- name: GetUser :one
-SELECT username, hashed_password, full_name, email, password_change_at, created_at FROM users
+SELECT username, hashed_password, full_name, email, password_change_at, created_at, is_email_verified FROM users
 WHERE username = $1 LIMIT 1
 `
 
@@ -59,6 +60,60 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.Email,
 		&i.PasswordChangeAt,
 		&i.CreatedAt,
+		&i.IsEmailVerified,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE users
+SET 
+    hashed_password = CASE
+        WHEN $1::boolean = TRUE THEN $2
+        ELSE hashed_password
+    END,
+    full_name = CASE
+        WHEN $3::boolean = TRUE THEN $4
+        ELSE full_name
+    END,
+    email = CASE
+        WHEN $5::boolean = TRUE THEN $6
+        ELSE email
+    END
+WHERE
+    username = $7
+RETURNING username, hashed_password, full_name, email, password_change_at, created_at, is_email_verified
+`
+
+type UpdateUserParams struct {
+	SetHashedPassword bool   `json:"set_hashed_password"`
+	HashedPassword    string `json:"hashed_password"`
+	SetFullName       bool   `json:"set_full_name"`
+	FullName          string `json:"full_name"`
+	SetEmail          bool   `json:"set_email"`
+	Email             string `json:"email"`
+	Username          string `json:"username"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
+		arg.SetHashedPassword,
+		arg.HashedPassword,
+		arg.SetFullName,
+		arg.FullName,
+		arg.SetEmail,
+		arg.Email,
+		arg.Username,
+	)
+	var i User
+	err := row.Scan(
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PasswordChangeAt,
+		&i.CreatedAt,
+		&i.IsEmailVerified,
 	)
 	return i, err
 }

@@ -32,7 +32,7 @@ func newUserResponse(user db.User) userResponse {
 		Username:          user.Username,
 		FullName:          user.FullName,
 		Email:             user.Email,
-		PasswordChangedAt: user.PasswordChangedAt,
+		PasswordChangedAt: user.PasswordChangeAt,
 		CreatedAt:         user.CreatedAt,
 	}
 }
@@ -120,7 +120,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(
+	refreshToken, refreshPayload,err := server.tokenMaker.CreateToken(
 		user.Username,
 		server.config.RefreshTokenDuration,
 	)
