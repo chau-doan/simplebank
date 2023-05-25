@@ -1,7 +1,7 @@
-Project first_project {
+Project simple_bank{
   database_type: 'PostgreSQL'
   Note: '''
-    # Simple Ban@ Database
+    # Simple Bank Database
   '''
 }
 
