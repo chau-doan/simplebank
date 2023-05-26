@@ -7,7 +7,7 @@ import "rpc_update_user.proto";
 import "rpc_login_user.proto";
 import "rpc_verify_email.proto";
 
-option go_package = "github.com/techschool/simplebank/pb";
+option go_package = "github.com/chau-doan/simplebank/pb";
 
 service SimpleBank {
   rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {

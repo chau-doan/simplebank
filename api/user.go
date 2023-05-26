@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	db "github.com/chau-doan/simplebank/db/sqlc"
+	"github.com/chau-doan/simplebank/util"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
-	db "github.com/techschool/simplebank/db/sqlc"
-	"github.com/techschool/simplebank/util"
+	_ "github.com/lib/pq"
 )
 
 type createUserRequest struct {
